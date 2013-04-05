@@ -1,0 +1,1818 @@
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 
+                      00002 #include <P16F887.INC>
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC16F887 processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2011 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+                      00789         LIST
+                      00003 #include "PrintMacros.inc"
+                      00001 PrintL  macro   Param1
+                      00002 ;Print Literal (ASCII)
+                      00003         movlw   Param1
+                      00004         movwf   Output
+                      00005         call    WrLCD
+                      00006         endm
+                      00007         
+                      00008 PrintF  macro   Param1
+                      00009 ;Print File (ASCII)
+                      00010         movf    Param1,w
+                      00011         movwf   Output
+                      00012         call    WrLCD
+                      00013         endm
+                      00014 
+                      00015 PrintFH macro   Param1
+                      00016 ;Print File (Hex, Low4) 
+                      00017         movf    Param1,w
+                      00018         call    HexASCII
+                      00019         movwf   Output
+                      00020         call    WrLCD
+                      00021         endm
+                      00022 
+                      00023 PrintFHL        macro   Param1
+                      00024 ;Print File (Hex, Low4) 
+                      00025         movf    Param1,w
+                      00026         call    HexASCII
+                      00027         movwf   Output
+                      00028         call    WrLCD
+                      00029         endm
+                      00030 
+                      00031 PrintFHH        macro   Param1
+                      00032 ;Print File (Hex, High4) 
+                      00033         swapf   Param1,w
+                      00034         call    HexASCII
+                      00035         movwf   Output
+                      00036         call    WrLCD
+                      00037         endm
+                      00004 #include "TestVectorMacro.inc"
+                      00001 TestVector macro        CTRIS, DTRIS, COUT, DOUT, CEXPECTED, DEXPECTED
+                      00002 
+                      00003         ;Copy the given literals into the variable locations
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00004         movlw   CTRIS
+                      00005         movwf   LastCT
+                      00006 
+                      00007         movlw   DTRIS
+                      00008         movwf   LastDT
+                      00009 
+                      00010         movlw   COUT
+                      00011         movwf   LastCO
+                      00012 
+                      00013         movlw   DOUT
+                      00014         movwf   LastDO
+                      00015 
+                      00016         movlw   CEXPECTED
+                      00017         movwf   CEXP
+                      00018 
+                      00019         movlw   DEXPECTED
+                      00020         movwf   DEXP
+                      00021 
+                      00022 
+                      00023         ;Run the test
+                      00024         call    RunTest
+                      00025 
+                      00026 
+                      00027         endm
+                      00028 
+                      00005 
+                      00006         cblock 0x20
+Warning[210]: Extra ","
+  00000020            00007         Delay1, Delay2, Delay3, Output, 
+  00000024            00008         LastCO, LastDO, LastCI, LastDI, LastCT, LastDT, CEXP, DEXP
+  0000002C            00009         FailFlag
+                      00010         endc
+                      00011 
+                      00012 
+0000                  00013         org 0x00
+                      00014         
+0000   20F9           00015         call    Set16F887
+0001   1683 1303      00016         banksel TRISA
+0003   30FF           00017         movlw   0xFF
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0004   0085           00018         movwf   TRISA
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0005   0186           00019         clrf    TRISB
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0006   0087           00020         movwf   TRISC
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0007   0088           00021         movwf   TRISD
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0008   0189           00022         clrf    TRISE
+0009   1283 1303      00023         banksel 0x00
+                      00024         
+                      00025 
+000B   21FD           00026         call    SetLCD
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00027 
+                      00028         
+                      00029         ;Run test vectors: CTRIS, DTRIS, COUT, DOUT, CEXPECTED, DEXPECTED
+                      00030 
+                      00031         ;        ----------------------------
+                      00032         ;       | 5V  D5  D4  D3  D2  D1  D0 |
+                      00033         ;       |(1 1) 0   0   1   0   0   1 |
+                      00034         ;       |                            |
+                      00035         ;       |  0   0   1   0   0   1(1 1)|
+                      00036         ;       | C0  C1  C2  C3  C4  C5  0V |
+                      00037         ;        ----------------------------
+                      00038 
+000C                  00039 Loop:
+                      00040 
+                      00041         TestVector 0xE4, 0xC9, 0x00, 0x00, 0x00, 0x00   ;00 00 00 00 --> 0 0 0 0
+                          M 
+                          M         ;Copy the given literals into the variable locations
+000C   30E4               M         movlw   0xE4
+000D   00A8               M         movwf   LastCT
+                          M 
+000E   30C9               M         movlw   0xC9
+000F   00A9               M         movwf   LastDT
+                          M 
+0010   3000               M         movlw   0x00
+0011   00A4               M         movwf   LastCO
+                          M 
+0012   3000               M         movlw   0x00
+0013   00A5               M         movwf   LastDO
+                          M 
+0014   3000               M         movlw   0x00
+0015   00AA               M         movwf   CEXP
+                          M 
+0016   3000               M         movlw   0x00
+0017   00AB               M         movwf   DEXP
+                          M 
+                          M 
+                          M         ;Run the test
+0018   2061               M         call    RunTest
+                          M 
+                          M 
+                      00042         TestVector 0xE4, 0xC9, 0x12, 0x12, 0x36, 0x1B   ;01 01 01 01 --> 1 1 1 1
+                          M 
+                          M         ;Copy the given literals into the variable locations
+0019   30E4               M         movlw   0xE4
+001A   00A8               M         movwf   LastCT
+                          M 
+001B   30C9               M         movlw   0xC9
+001C   00A9               M         movwf   LastDT
+                          M 
+001D   3012               M         movlw   0x12
+001E   00A4               M         movwf   LastCO
+                          M 
+001F   3012               M         movlw   0x12
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0020   00A5               M         movwf   LastDO
+                          M 
+0021   3036               M         movlw   0x36
+0022   00AA               M         movwf   CEXP
+                          M 
+0023   301B               M         movlw   0x1B
+0024   00AB               M         movwf   DEXP
+                          M 
+                          M 
+                          M         ;Run the test
+0025   2061               M         call    RunTest
+                          M 
+                          M 
+                      00043         TestVector 0xE4, 0xC9, 0x09, 0x24, 0x2D, 0x2D   ;10 10 10 10 --> 1 1 1 1
+                          M 
+                          M         ;Copy the given literals into the variable locations
+0026   30E4               M         movlw   0xE4
+0027   00A8               M         movwf   LastCT
+                          M 
+0028   30C9               M         movlw   0xC9
+0029   00A9               M         movwf   LastDT
+                          M 
+002A   3009               M         movlw   0x09
+002B   00A4               M         movwf   LastCO
+                          M 
+002C   3024               M         movlw   0x24
+002D   00A5               M         movwf   LastDO
+                          M 
+002E   302D               M         movlw   0x2D
+002F   00AA               M         movwf   CEXP
+                          M 
+0030   302D               M         movlw   0x2D
+0031   00AB               M         movwf   DEXP
+                          M 
+                          M 
+                          M         ;Run the test
+0032   2061               M         call    RunTest
+                          M 
+                          M 
+                      00044         TestVector 0xE4, 0xC9, 0x1B, 0x36, 0x1B, 0x36   ;11 11 11 11 --> 0 0 0 0
+                          M 
+                          M         ;Copy the given literals into the variable locations
+0033   30E4               M         movlw   0xE4
+0034   00A8               M         movwf   LastCT
+                          M 
+0035   30C9               M         movlw   0xC9
+0036   00A9               M         movwf   LastDT
+                          M 
+0037   301B               M         movlw   0x1B
+0038   00A4               M         movwf   LastCO
+                          M 
+0039   3036               M         movlw   0x36
+003A   00A5               M         movwf   LastDO
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M 
+003B   301B               M         movlw   0x1B
+003C   00AA               M         movwf   CEXP
+                          M 
+003D   3036               M         movlw   0x36
+003E   00AB               M         movwf   DEXP
+                          M 
+                          M 
+                          M         ;Run the test
+003F   2061               M         call    RunTest
+                          M 
+                          M 
+                      00045 
+0040   280C           00046         goto    Loop    
+                      00047         
+                      00048 
+0041                  00049 Pass:
+0041   2210           00050         call    Cls
+                      00051         PrintL  'P'
+                          M ;Print Literal (ASCII)
+0042   3050               M         movlw   'P'
+0043   00A3               M         movwf   Output
+0044   21F3               M         call    WrLCD
+                      00052         PrintL  'A'
+                          M ;Print Literal (ASCII)
+0045   3041               M         movlw   'A'
+0046   00A3               M         movwf   Output
+0047   21F3               M         call    WrLCD
+                      00053         PrintL  'S'
+                          M ;Print Literal (ASCII)
+0048   3053               M         movlw   'S'
+0049   00A3               M         movwf   Output
+004A   21F3               M         call    WrLCD
+                      00054         PrintL  'S'
+                          M ;Print Literal (ASCII)
+004B   3053               M         movlw   'S'
+004C   00A3               M         movwf   Output
+004D   21F3               M         call    WrLCD
+004E   2082           00055         call    PrintTestResults
+                      00056         ;Wait for a short while
+004F   2164           00057         call    Delay_50ms
+                      00058 
+0050   0008           00059         return
+                      00060 
+0051                  00061 Fail:
+0051   2210           00062         call    Cls
+                      00063         PrintL  'F'
+                          M ;Print Literal (ASCII)
+0052   3046               M         movlw   'F'
+0053   00A3               M         movwf   Output
+0054   21F3               M         call    WrLCD
+                      00064         PrintL  'A'
+                          M ;Print Literal (ASCII)
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0055   3041               M         movlw   'A'
+0056   00A3               M         movwf   Output
+0057   21F3               M         call    WrLCD
+                      00065         PrintL  'I'
+                          M ;Print Literal (ASCII)
+0058   3049               M         movlw   'I'
+0059   00A3               M         movwf   Output
+005A   21F3               M         call    WrLCD
+                      00066         PrintL  'L'
+                          M ;Print Literal (ASCII)
+005B   304C               M         movlw   'L'
+005C   00A3               M         movwf   Output
+005D   21F3               M         call    WrLCD
+005E   2082           00067         call    PrintTestResults
+                      00068         ;Wait for a while
+005F   21B7           00069         call    Delay_5s
+0060   0008           00070         return
+                      00071 
+                      00072 
+0061                  00073 RunTest:
+                      00074         ;Set up the TRIS ports
+0061   1683 1303      00075         banksel TRISA
+0063   0828           00076         movf    LastCT,w
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0064   0087           00077         movwf   TRISC
+0065   0829           00078         movf    LastDT,w
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0066   0088           00079         movwf   TRISD
+0067   1283 1303      00080         banksel 0x00
+                      00081 
+                      00082         ;Set up the outputs
+0069   0824           00083         movf    LastCO, w
+006A   0087           00084         movwf   PORTC
+006B   0825           00085         movf    LastDO, w
+006C   0088           00086         movwf   PORTD
+                      00087 
+                      00088 
+                      00089         ;Record the results
+006D   0807           00090         movf    PORTC, w
+006E   00A6           00091         movwf   LastCI
+006F   0808           00092         movf    PORTD, w
+0070   00A7           00093         movwf   LastDI
+                      00094 
+                      00095 
+                      00096         ;Clear the result.
+0071   01AC           00097         clrf    FailFlag
+                      00098 
+                      00099         ;Check to see if C results match expected
+0072   0826           00100         movf    LastCI, w
+0073   393F           00101         andlw   0x3F            ;Strip out the high two bits
+0074   062A           00102         xorwf   CEXP, w
+0075   04AC           00103         iorwf   FailFlag, f
+                      00104 
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00105 
+                      00106         ;Check to see if D results match expected
+0076   0827           00107         movf    LastDI, w
+0077   393F           00108         andlw   0x3F            ;Strip out the high two bits
+0078   062B           00109         xorwf   DEXP, w
+0079   04AC           00110         iorwf   FailFlag, f 
+                      00111 
+                      00112 
+                      00113         ;Clear the screen
+007A   2210           00114         call    Cls
+                      00115 
+                      00116 
+                      00117         ;Call Pass or Fail routine
+007B   08AC           00118         movf    FailFlag, f
+007C   1D03           00119         btfss   STATUS, Z
+007D   2051           00120         call    Fail
+007E   08AC           00121         movf    FailFlag, f
+007F   1903           00122         btfsc   STATUS, Z
+0080   2041           00123         call    Pass
+                      00124 
+0081   0008           00125         return
+                      00126 
+                      00127 
+0082                  00128 PrintTestResults:
+                      00129         ;Print out CTRIS, DTRIS, COUT, DOUT in hex
+                      00130         PrintL  ' '
+                          M ;Print Literal (ASCII)
+0082   3020               M         movlw   ' '
+0083   00A3               M         movwf   Output
+0084   21F3               M         call    WrLCD
+                      00131         PrintFHH        LastCT
+                          M ;Print File (Hex, High4) 
+0085   0E28               M         swapf   LastCT,w
+0086   20E6               M         call    HexASCII
+0087   00A3               M         movwf   Output
+0088   21F3               M         call    WrLCD
+                      00132         PrintFHL        LastCT
+                          M ;Print File (Hex, Low4) 
+0089   0828               M         movf    LastCT,w
+008A   20E6               M         call    HexASCII
+008B   00A3               M         movwf   Output
+008C   21F3               M         call    WrLCD
+                      00133         PrintL  ' '
+                          M ;Print Literal (ASCII)
+008D   3020               M         movlw   ' '
+008E   00A3               M         movwf   Output
+008F   21F3               M         call    WrLCD
+                      00134         PrintFHH        LastDT
+                          M ;Print File (Hex, High4) 
+0090   0E29               M         swapf   LastDT,w
+0091   20E6               M         call    HexASCII
+0092   00A3               M         movwf   Output
+0093   21F3               M         call    WrLCD
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00135         PrintFHL        LastDT
+                          M ;Print File (Hex, Low4) 
+0094   0829               M         movf    LastDT,w
+0095   20E6               M         call    HexASCII
+0096   00A3               M         movwf   Output
+0097   21F3               M         call    WrLCD
+                      00136         PrintL  ' '
+                          M ;Print Literal (ASCII)
+0098   3020               M         movlw   ' '
+0099   00A3               M         movwf   Output
+009A   21F3               M         call    WrLCD
+                      00137         PrintFHH        LastCO
+                          M ;Print File (Hex, High4) 
+009B   0E24               M         swapf   LastCO,w
+009C   20E6               M         call    HexASCII
+009D   00A3               M         movwf   Output
+009E   21F3               M         call    WrLCD
+                      00138         PrintFHL        LastCO
+                          M ;Print File (Hex, Low4) 
+009F   0824               M         movf    LastCO,w
+00A0   20E6               M         call    HexASCII
+00A1   00A3               M         movwf   Output
+00A2   21F3               M         call    WrLCD
+                      00139         PrintL  ' '
+                          M ;Print Literal (ASCII)
+00A3   3020               M         movlw   ' '
+00A4   00A3               M         movwf   Output
+00A5   21F3               M         call    WrLCD
+                      00140         PrintFHH        LastDO
+                          M ;Print File (Hex, High4) 
+00A6   0E25               M         swapf   LastDO,w
+00A7   20E6               M         call    HexASCII
+00A8   00A3               M         movwf   Output
+00A9   21F3               M         call    WrLCD
+                      00141         PrintFHL        LastDO
+                          M ;Print File (Hex, Low4) 
+00AA   0825               M         movf    LastDO,w
+00AB   20E6               M         call    HexASCII
+00AC   00A3               M         movwf   Output
+00AD   21F3               M         call    WrLCD
+                      00142 
+                      00143         ;Go to LCD line 2
+00AE   3040           00144         movlw   0x40
+00AF   00A3           00145         movwf   Output
+00B0   2219           00146         call    LCDGoto
+                      00147 
+                      00148         ;Print out CEXP, DEXP, CIN, DIN, FailFlag
+                      00149         PrintFHH        CEXP
+                          M ;Print File (Hex, High4) 
+00B1   0E2A               M         swapf   CEXP,w
+00B2   20E6               M         call    HexASCII
+00B3   00A3               M         movwf   Output
+00B4   21F3               M         call    WrLCD
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00150         PrintFHL        CEXP
+                          M ;Print File (Hex, Low4) 
+00B5   082A               M         movf    CEXP,w
+00B6   20E6               M         call    HexASCII
+00B7   00A3               M         movwf   Output
+00B8   21F3               M         call    WrLCD
+                      00151         PrintL  ' '
+                          M ;Print Literal (ASCII)
+00B9   3020               M         movlw   ' '
+00BA   00A3               M         movwf   Output
+00BB   21F3               M         call    WrLCD
+                      00152         PrintFHH        DEXP
+                          M ;Print File (Hex, High4) 
+00BC   0E2B               M         swapf   DEXP,w
+00BD   20E6               M         call    HexASCII
+00BE   00A3               M         movwf   Output
+00BF   21F3               M         call    WrLCD
+                      00153         PrintFHL        DEXP
+                          M ;Print File (Hex, Low4) 
+00C0   082B               M         movf    DEXP,w
+00C1   20E6               M         call    HexASCII
+00C2   00A3               M         movwf   Output
+00C3   21F3               M         call    WrLCD
+                      00154         PrintL  ' '
+                          M ;Print Literal (ASCII)
+00C4   3020               M         movlw   ' '
+00C5   00A3               M         movwf   Output
+00C6   21F3               M         call    WrLCD
+                      00155         PrintFHH        LastCI
+                          M ;Print File (Hex, High4) 
+00C7   0E26               M         swapf   LastCI,w
+00C8   20E6               M         call    HexASCII
+00C9   00A3               M         movwf   Output
+00CA   21F3               M         call    WrLCD
+                      00156         PrintFHL        LastCI
+                          M ;Print File (Hex, Low4) 
+00CB   0826               M         movf    LastCI,w
+00CC   20E6               M         call    HexASCII
+00CD   00A3               M         movwf   Output
+00CE   21F3               M         call    WrLCD
+                      00157         PrintL  ' '
+                          M ;Print Literal (ASCII)
+00CF   3020               M         movlw   ' '
+00D0   00A3               M         movwf   Output
+00D1   21F3               M         call    WrLCD
+                      00158         PrintFHH        LastDI
+                          M ;Print File (Hex, High4) 
+00D2   0E27               M         swapf   LastDI,w
+00D3   20E6               M         call    HexASCII
+00D4   00A3               M         movwf   Output
+00D5   21F3               M         call    WrLCD
+                      00159         PrintFHL        LastDI
+                          M ;Print File (Hex, Low4) 
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00D6   0827               M         movf    LastDI,w
+00D7   20E6               M         call    HexASCII
+00D8   00A3               M         movwf   Output
+00D9   21F3               M         call    WrLCD
+                      00160         PrintL  ' '
+                          M ;Print Literal (ASCII)
+00DA   3020               M         movlw   ' '
+00DB   00A3               M         movwf   Output
+00DC   21F3               M         call    WrLCD
+                      00161         PrintFHH        FailFlag
+                          M ;Print File (Hex, High4) 
+00DD   0E2C               M         swapf   FailFlag,w
+00DE   20E6               M         call    HexASCII
+00DF   00A3               M         movwf   Output
+00E0   21F3               M         call    WrLCD
+                      00162         PrintFHL        FailFlag
+                          M ;Print File (Hex, Low4) 
+00E1   082C               M         movf    FailFlag,w
+00E2   20E6               M         call    HexASCII
+00E3   00A3               M         movwf   Output
+00E4   21F3               M         call    WrLCD
+                      00163 
+00E5   0008           00164         return
+                      00165 
+                      00166         
+                      00167 #include "HexASCII.inc"
+00E6                  00001 HexASCII:                       ;Takes 4-bit value in W and returns ASCII code
+                      00002 ;---------------------------------------------------------------------          
+00E6   390F           00003                 andlw   0x0F    ;Make *sure* it's really a 4-bit value!
+00E7   0782           00004                 addwf   PCL,f   
+00E8   3430 3431 3432 00005                 dt              "0123456789ABCDEF"
+       3433 3434 3435 
+       3436 3437 3438 
+       3439 3441 3442 
+       3443 3444 3445 
+       3446 
+00F8   0008           00006                 return
+                      00007 
+                      00168 #include "16F887_setup.inc"
+                      00001 ;PIC16F887 initialization code
+                      00002 ;(sets up all ports as digital I/O, with 8MHz internal oscillator)
+                      00003 ;
+                      00004 ;Copyleft 2008, M. Eric Carr / Paleotechnologist.Net
+                      00005 ;(You are free to use this under the Creative Commons license,
+                      00006 ; for any purposes including commercial use, as long as this header
+                      00007 ; is left intact or attribution is otherwise given.)
+                      00008 ;----------------------------------------------------------------
+                      00009 
+00F9                  00010 Set16F887:
+                      00011 
+00F9   1683 1303      00012         banksel OPTION_REG
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+00FB   1281           00013         bcf     OPTION_REG,5    ;Timer0 transition on Fosc/4, not 
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00014                                 ;T0CKI pin
+                      00015         ;INTCON is OK as-is
+                      00016 
+                      00017         ;PIE1 is OK as-is
+                      00018 
+                      00019         ;PIE2 is OK as-is
+                      00020 
+                      00021         ;PIR1 and PIR2 provide status info and are OK as-is
+                      00022 
+                      00023         ;PCON is OK as-is (control BOREN through config word)
+                      00024 
+00FC   1683 1703      00025         banksel ANSEL
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+00FE   0188           00026         clrf    ANSEL           ;All pins set to digital I/O
+                      00027 
+00FF   1683 1703      00028         banksel ANSELH
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0101   0189           00029         clrf    ANSELH          ;These pins as digital I/O also
+                      00030 
+0102   1683 1303      00031         banksel OSCCON
+0104   3071           00032         movlw   0x71            ;Internal oscillator / 8MHz
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0105   008F           00033         movwf   OSCCON
+                      00034 
+                      00035         ;T1CON is OK as-is
+                      00036 
+                      00037         ;T2CON is OK as-is
+                      00038 
+                      00039         ;CM1CON0 should be OK as-is (possible issue with bits 0-2?)
+                      00040 
+                      00041         ;CM2CON0 should be OK as-is (possible issue with bits 0-2?)
+                      00042 
+                      00043         ;CM2CON1 is OK as-is
+                      00044 
+                      00045         ;SRCON should be OK as-is
+                      00046 
+                      00047         ;VRCON is OK as-is
+                      00048 
+                      00049         ;ADCON0 is OK as-is
+                      00050 
+                      00051         ;ADCON1 is OK as-is
+                      00052         
+                      00053         ;CCP1CON should be OK as-is
+                      00054 
+                      00055         ;CCP2CON should be OK as-is
+                      00056 
+0106   1283 1303      00057         banksel 0x00
+                      00058 
+0108   0008           00059         return
+                      00060 
+                      00169 #include "delay_8.inc"
+                      00001 ;=============================================================
+                      00002 ;                                                            ;
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00003 ; Delay_8.inc                                                  ;
+                      00004 ;                                                            ;
+                      00005 ; Library of delay routines for 8-bit PIC microcontrollers,  ;
+                      00006 ; calibrated to 8MHz clock speed.                            ;
+                      00007 ; (accurate to the exact number of clock cycles,             ;
+                      00008 ; including the call/return overhead.)                       ;
+                      00009 ;                                                            ;
+                      00010 ; Copyleft 2008: M. Eric Carr / Intellectualism.Org          ;
+                      00011 ;                                                            ;
+                      00012 ; You are free to re-use this code in any open-source        ;
+                      00013 ; application, or to use it for private use, as long         ;
+                      00014 ; as this header remains unmodified.                         ;
+                      00015 ;                                                            ;
+                      00016 ; If you find this code useful, I would appreciate an        ;
+                      00017 ; email at eric@intellectualism.org . Thanks!                ;
+                      00018 ;                                                            ;
+                      00019 ;=============================================================
+                      00020 
+                      00021 ; Usage: 
+                      00022 ; ------
+                      00023 ; Call these routines to implement a delay of
+                      00024 ; the specified amount of time. For instance, to
+                      00025 ; implement a 20-microsecond delay, use the following:
+                      00026 ;
+                      00027 ;      call       Delay_20us
+                      00028 ;
+                      00029 ; (Combine these times to produce any desired delay.)
+                      00030 ;
+                      00031 ;
+                      00032 ; Optimizations: 
+                      00033 ; --------------
+                      00034 ; These routines were written with the following priorities:
+                      00035 ; (1) Each delay routine, including call overhead, shall
+                      00036 ;     be accurate to the exact clock cycle (assuming a
+                      00037 ;     perfectly accurate system clock.)
+                      00038 ; (2) Subroutines shall use no more than one call stack level.
+                      00039 ; (3) Variable usage should be minimized
+                      00040 ; (4) Code size should be minimized while maintaining readability
+                      00041 ; (5) Subroutines are standalone and shall have no dependencies,
+                      00042 ;     other than the delay variables.
+                      00043 ;
+                      00044 ;
+                      00045 ; Delay times available at 8MHz*
+                      00046 ; ------------------------------
+                      00047 ; 2us / 5us
+                      00048 ; 10us / 20us / 50us
+                      00049 ; 100us / 200us / 500us
+                      00050 ; 1ms / 2ms / 5ms
+                      00051 ; 10ms / 20ms / 50ms
+                      00052 ; 100ms / 200ms / 500ms
+                      00053 ; 1s / 2s / 5s
+                      00054 ; 10s / 20s
+                      00055 ;
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00056 ;
+                      00057 ; Quirks:
+                      00058 ; -------
+                      00059 ; These routines don't know about (and don't care about)
+                      00060 ; interrupts. If they're interrupted, YMMV.
+                      00061 ;
+                      00062 ; * (1us timing -- two instructions -- is less than the call/
+                      00063 ;    return overhead. This should be handled with inline code.)
+                      00064 ; * 20s is the largest delay implemented, since it is near
+                      00065 ;   the limit of three nested loops. Larger delays are of course
+                      00066 ;   possible, but I had to stop somewhere.
+                      00067 
+                      00068 ;=======================================================
+                      00069 
+                      00070 
+                      00071 
+                      00072 ;Local variables, for delay subroutine library use
+                      00073 ;(Not true protected local/private variables, since
+                      00074 ; this doesn't exist in PIC16 assembly, but hopefully
+                      00075 ; these memory locations are not used elsewhere...)
+                      00076 
+                      00077 ;       cblock
+                      00078 ;       Delay1, Delay2, Delay3
+                      00079 ;       endc
+                      00080 
+                      00081 
+                      00082 ;Delay_1us  **IMPOSSIBLE @ 2MIPS; USE GOTO $+1 or NOP/NOP INSTEAD**
+                      00083 ;                       **A macro is NOT provided since this is dangerous
+                      00084 ;                         if CALLed carelessly. Better to let it fail at
+                      00085 ;                         assembly time. **
+                      00086 
+                      00087 
+0109                  00088 Delay_2us:                              ;2usec delay @ 8MHz (4 cycles)
+0109   0008           00089                 return                          
+                      00090 
+010A                  00091 Delay_5us:                              ;5usec delay @ 8MHz (10 cycles)
+010A   290B           00092                 goto $+1
+010B   290C           00093                 goto $+1
+010C   290D           00094                 goto $+1
+010D   0008           00095                 return          
+                      00096 
+010E                  00097 Delay_10us:                             ;10usec delay @ 8MHz (20 cycles)
+010E   3005           00098                 movlw   0x05
+010F   00A0           00099                 movwf   Delay1
+0110   0BA0           00100                 decfsz  Delay1,f
+0111   2910           00101                 goto    $-1
+0112   0008           00102                 return
+                      00103 
+                      00104 
+0113                  00105 Delay_20us:                             ;20usec delay @ 8MHz (40 cycles)
+0113   300B           00106                 movlw   0x0B
+0114   00A0           00107                 movwf   Delay1
+0115   0BA0           00108                 decfsz  Delay1,f
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0116   2915           00109                 goto    $-1
+0117   2918           00110                 goto    $+1
+0118   0008           00111                 return
+                      00112 
+                      00113 
+                      00114 
+0119                  00115 Delay_50us:                             ;50usec delay @ 8MHz (100 cycles)
+0119   301F           00116                 movlw   0x1F
+011A   00A0           00117                 movwf   Delay1
+011B   0BA0           00118                 decfsz  Delay1,f
+011C   291B           00119                 goto    $-1
+011D   291E           00120                 goto    $+1
+011E   0008           00121                 return
+                      00122 
+                      00123 
+011F                  00124 Delay_100us:                    ;100usec delay @ 8MHz (200 cycles)
+011F   3041           00125                 movlw   0x41
+0120   00A0           00126                 movwf   Delay1
+0121   0BA0           00127                 decfsz  Delay1,f
+0122   2921           00128                 goto    $-1
+0123   0008           00129                 return
+                      00130 
+                      00131 
+0124                  00132 Delay_200us:                    ;200usec delay @ 8MHz (400 cycles)
+0124   3083           00133                 movlw   0x83
+0125   00A0           00134                 movwf   Delay1
+0126   0BA0           00135                 decfsz  Delay1,f
+0127   2926           00136                 goto    $-1
+0128   2929           00137                 goto    $+1
+0129   0008           00138                 return
+                      00139 
+                      00140 
+012A                  00141 Delay_500us:                    ;500usec delay @ 8MHz (1000 cycles)
+012A   3005           00142                 movlw   0x05
+012B   00A1           00143                 movwf   Delay2
+012C   3041           00144                 movlw   0x41
+012D   00A0           00145                 movwf   Delay1
+012E   0BA0           00146                 decfsz  Delay1,f
+012F   292E           00147                 goto    $-1
+0130   0BA1           00148                 decfsz  Delay2,f
+0131   292C           00149                 goto    $-5
+0132   0008           00150                 return
+                      00151 
+                      00152 
+0133                  00153 Delay_1ms:                      ;1msec delay @ 8MHz (2000 cycles)
+0133   3003           00154                 movlw   0x03
+0134   00A1           00155                 movwf   Delay2
+0135   30DC           00156                 movlw   0xDC
+0136   00A0           00157                 movwf   Delay1
+0137   0BA0           00158                 decfsz  Delay1,f
+0138   2937           00159                 goto    $-1
+0139   0BA1           00160                 decfsz  Delay2,f
+013A   2935           00161                 goto    $-5
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+013B   293C           00162                 goto    $+1
+013C   0000           00163                 nop
+013D   0008           00164                 return
+                      00165 
+                      00166 
+                      00167 
+013E                  00168 Delay_2ms:                      ;2msec delay @ 8MHz (4000 cycles)
+013E   302F           00169                 movlw   0x2F
+013F   00A1           00170                 movwf   Delay2
+0140   301B           00171                 movlw   0x1B
+0141   00A0           00172                 movwf   Delay1
+0142   0BA0           00173                 decfsz  Delay1,f
+0143   2942           00174                 goto    $-1
+0144   0BA1           00175                 decfsz  Delay2,f
+0145   2940           00176                 goto    $-5
+0146   0008           00177                 return
+                      00178 
+                      00179 
+                      00180 
+0147                  00181 Delay_5ms:                      ;5msec delay @ 8MHz (10k cycles)
+0147   3013           00182                 movlw   0x13            ;0x95
+0148   00A1           00183                 movwf   Delay2
+0149   30AE           00184                 movlw   0xAE            ;0x15
+014A   00A0           00185                 movwf   Delay1
+014B   0BA0           00186                 decfsz  Delay1,f
+014C   294B           00187                 goto    $-1
+014D   0BA1           00188                 decfsz  Delay2,f
+014E   2949           00189                 goto    $-5
+014F   0000           00190                 nop
+0150   0008           00191                 return
+                      00192 
+                      00193 
+                      00194 
+0151                  00195 Delay_10ms:                     ;10msec delay @ 8MHz (20k cycles) --OK
+0151   301A           00196                 movlw   0x1A
+0152   00A1           00197                 movwf   Delay2
+0153   30FF           00198                 movlw   0xFF
+0154   00A0           00199                 movwf   Delay1
+0155   0BA0           00200                 decfsz  Delay1,f
+0156   2955           00201                 goto    $-1
+0157   0BA1           00202                 decfsz  Delay2,f
+0158   2953           00203                 goto    $-5
+0159   0000           00204                 nop
+015A   0008           00205                 return
+                      00206 
+                      00207 
+015B                  00208 Delay_20ms:                     ;20msec delay @ 8MHz (40k cycles)
+015B   305F           00209                 movlw   0x5f
+015C   00A1           00210                 movwf   Delay2
+015D   308B           00211                 movlw   0x8b
+015E   00A0           00212                 movwf   Delay1
+015F   0BA0           00213                 decfsz  Delay1,f
+0160   295F           00214                 goto    $-1
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 16
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0161   0BA1           00215                 decfsz  Delay2,f
+0162   295D           00216                 goto    $-5
+0163   0008           00217                 return
+                      00218 
+                      00219 
+                      00220 
+0164                  00221 Delay_50ms:                     ;50msec delay @ 8MHz (100k cycles)
+0164   30C6           00222                 movlw   0xc6
+0165   00A1           00223                 movwf   Delay2
+0166   30A7           00224                 movlw   0xa7
+0167   00A0           00225                 movwf   Delay1
+0168   0BA0           00226                 decfsz  Delay1,f
+0169   2968           00227                 goto    $-1
+016A   0BA1           00228                 decfsz  Delay2,f
+016B   2966           00229                 goto    $-5
+016C   296D           00230                 goto    $+1
+016D   296E           00231                 goto    $+1
+016E   0000           00232                 nop
+016F   0008           00233                 return
+                      00234 
+                      00235 
+                      00236 
+                      00237 
+                      00238 
+0170                  00239 Delay_100ms:                    ;100msec delay @ 8MHz (200k cycles)
+0170   30C7           00240                 movlw   0xC7
+0171   00A2           00241                 movwf   Delay3
+0172   308F           00242                 movlw   0x8F
+0173   00A1           00243                 movwf   Delay2
+0174   3001           00244                 movlw   0x01
+0175   00A0           00245                 movwf   Delay1
+0176   0BA0           00246                 decfsz  Delay1,f
+0177   2976           00247                 goto    $-1
+0178   0BA1           00248                 decfsz  Delay2,f
+0179   2974           00249                 goto    $-5
+017A   0BA2           00250                 decfsz  Delay3,f
+017B   2972           00251                 goto    $-9
+017C   0008           00252                 return
+                      00253 
+                      00254 
+017D                  00255 Delay_200ms:                    ;200msec delay @ 8MHz (400k cycles)
+017D   300E           00256                 movlw   0x0E
+017E   00A2           00257                 movwf   Delay3
+017F   3031           00258                 movlw   0x31
+0180   00A1           00259                 movwf   Delay2
+0181   30C1           00260                 movlw   0xc1
+0182   00A0           00261                 movwf   Delay1
+0183   0BA0           00262                 decfsz  Delay1,f
+0184   2983           00263                 goto    $-1
+0185   0BA1           00264                 decfsz  Delay2,f
+0186   2981           00265                 goto    $-5
+0187   0BA2           00266                 decfsz  Delay3,f
+0188   297F           00267                 goto    $-9
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 17
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0189   0000           00268                 nop
+018A   0008           00269                 return
+                      00270 
+                      00271 
+                      00272 
+018B                  00273 Delay_500ms:                    ;500msec delay @ 8MHz (1M cycles)
+018B   302E           00274                 movlw   0x2E
+018C   00A2           00275                 movwf   Delay3
+018D   30BD           00276                 movlw   0xBD
+018E   00A1           00277                 movwf   Delay2
+018F   3025           00278                 movlw   0x25
+0190   00A0           00279                 movwf   Delay1
+0191   0BA0           00280                 decfsz  Delay1,f
+0192   2991           00281                 goto    $-1
+0193   0BA1           00282                 decfsz  Delay2,f
+0194   298F           00283                 goto    $-5
+0195   0BA2           00284                 decfsz  Delay3,f
+0196   298D           00285                 goto    $-9
+0197   0000           00286                 nop
+0198   0008           00287                 return
+                      00288 
+                      00289 
+0199                  00290 Delay_1s:                       ;1sec delay @ 8MHz (2M cycles)
+0199   30A7           00291                 movlw   0xA7
+019A   00A2           00292                 movwf   Delay3
+019B   30A4           00293                 movlw   0xA4
+019C   00A1           00294                 movwf   Delay2
+019D   3017           00295                 movlw   0x17
+019E   00A0           00296                 movwf   Delay1
+019F   0BA0           00297                 decfsz  Delay1,f
+01A0   299F           00298                 goto    $-1
+01A1   0BA1           00299                 decfsz  Delay2,f
+01A2   299D           00300                 goto    $-5
+01A3   0BA2           00301                 decfsz  Delay3,f
+01A4   299B           00302                 goto    $-9
+01A5   29A6           00303                 goto    $+1
+01A6   0000           00304                 nop
+01A7   0008           00305                 return
+                      00306 
+01A8                  00307 Delay_2s:                       ;2sec delay @ 8MHz (4M cycles)
+01A8   30FE           00308                 movlw   0xFE
+01A9   00A2           00309                 movwf   Delay3
+01AA   30F6           00310                 movlw   0xF6
+01AB   00A1           00311                 movwf   Delay2
+01AC   3014           00312                 movlw   0x14
+01AD   00A0           00313                 movwf   Delay1
+01AE   0BA0           00314                 decfsz  Delay1,f
+01AF   29AE           00315                 goto    $-1
+01B0   0BA1           00316                 decfsz  Delay2,f
+01B1   29AC           00317                 goto    $-5
+01B2   0BA2           00318                 decfsz  Delay3,f
+01B3   29AA           00319                 goto    $-9
+01B4   29B5           00320                 goto    $+1
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 18
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+01B5   0000           00321                 nop
+01B6   0008           00322                 return
+                      00323 
+                      00324 
+01B7                  00325 Delay_5s:                       ;5sec delay @ 8MHz (10M cycles)
+01B7   30B9           00326                 movlw   0xB9
+01B8   00A2           00327                 movwf   Delay3
+01B9   30E6           00328                 movlw   0xE6
+01BA   00A1           00329                 movwf   Delay2
+01BB   304D           00330                 movlw   0x4D
+01BC   00A0           00331                 movwf   Delay1
+01BD   0BA0           00332                 decfsz  Delay1,f
+01BE   29BD           00333                 goto    $-1
+01BF   0BA1           00334                 decfsz  Delay2,f
+01C0   29BB           00335                 goto    $-5
+01C1   0BA2           00336                 decfsz  Delay3,f
+01C2   29B9           00337                 goto    $-9
+01C3   29C4           00338                 goto    $+1
+01C4   29C5           00339                 goto    $+1
+01C5   0000           00340                 nop
+01C6   0008           00341                 return
+                      00342 
+01C7                  00343 Delay_10s:                      ;10sec delay @ 8MHz (20M cycles)
+01C7   30AB           00344                 movlw   0xAB
+01C8   00A2           00345                 movwf   Delay3
+01C9   30CF           00346                 movlw   0xCF
+01CA   00A1           00347                 movwf   Delay2
+01CB   30BB           00348                 movlw   0xBB
+01CC   00A0           00349                 movwf   Delay1
+01CD   0BA0           00350                 decfsz  Delay1,f
+01CE   29CD           00351                 goto    $-1
+01CF   0BA1           00352                 decfsz  Delay2,f
+01D0   29CB           00353                 goto    $-5
+01D1   0BA2           00354                 decfsz  Delay3,f
+01D2   29C9           00355                 goto    $-9
+01D3   29D4           00356                 goto    $+1
+01D4   29D5           00357                 goto    $+1
+01D5   29D6           00358                 goto    $+1
+01D6   0008           00359                 return
+                      00360 
+01D7                  00361 Delay_20s:                      ;20sec delay @ 8MHz (40M cycles)
+01D7   30F1           00362                 movlw   0xF1
+01D8   00A2           00363                 movwf   Delay3
+01D9   30DD           00364                 movlw   0xDD
+01DA   00A1           00365                 movwf   Delay2
+01DB   30F9           00366                 movlw   0xF9
+01DC   00A0           00367                 movwf   Delay1
+01DD   0BA0           00368                 decfsz  Delay1,f
+01DE   29DD           00369                 goto    $-1
+01DF   0BA1           00370                 decfsz  Delay2,f
+01E0   29DB           00371                 goto    $-5
+01E1   0BA2           00372                 decfsz  Delay3,f
+01E2   29D9           00373                 goto    $-9
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 19
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00374 
+01E3   3006           00375                 movlw   0x06
+01E4   00A0           00376                 movwf   Delay1
+01E5   0BA0           00377                 decfsz  Delay1,f
+01E6   29E5           00378                 goto    $-1
+                      00379 
+01E7   0000           00380                 nop
+                      00381 
+01E8   0008           00382                 return
+                      00170 #include "LCD.inc"
+                      00001 ;Write to the LCD Control register
+01E9   3004           00002 WrLCC   movlw   0x04
+01EA   0089           00003                 movwf   PORTE
+01EB   0823           00004                 movf    Output,w
+01EC   0086           00005                 movwf   PORTB
+01ED   3000           00006                 movlw   0x00
+01EE   0089           00007                 movwf   PORTE
+01EF   2119           00008                 Call    Delay_50us
+01F0   3004           00009                 movlw   0x04
+01F1   0089           00010                 movwf   PORTE
+                      00011                 
+01F2   0008           00012                 return
+                      00013 
+                      00014 
+                      00015 ;Write to the LCD Data register
+01F3   3005           00016 WrLCD   movlw   0x05
+01F4   0089           00017                 movwf   PORTE
+01F5   0823           00018                 movf    Output,w
+01F6   0086           00019                 movwf   PORTB
+01F7   3001           00020                 movlw   0x01
+01F8   0089           00021                 movwf   PORTE
+01F9   2119           00022                 Call    Delay_50us      
+01FA   3005           00023                 movlw   0x05
+01FB   0089           00024                 movwf   PORTE
+01FC   0008           00025                 return
+                      00026 
+                      00027 
+                      00028 
+                      00029 
+                      00030 ;Set up the LCD (send the init string)
+                      00031 ;------------------------------
+01FD                  00032 SetLCD  
+01FD   2170           00033                 call    Delay_100ms     ;Wait for LCD to init
+01FE   3038           00034                 movlw   0x38            ;2-line, 5x7, 8-bit mode
+01FF   00A3           00035                 movwf   Output
+0200   21E9           00036                 call    WrLCC
+0201   300C           00037                 movlw   0x0C            ;(was 0x0C. Disp on/Cursor on/blink)
+0202   00A3           00038                 movwf   Output
+0203   21E9           00039                 call    WrLCC
+0204   3001           00040                 movlw   0x01            ;Clear the display
+0205   00A3           00041                 movwf   Output
+0206   21E9           00042                 call    WrLCC
+0207   3006           00043                 movlw   0x06            ;Set shift-right behavior
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 20
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0208   00A3           00044                 movwf   Output
+0209   21E9           00045                 call    WrLCC
+020A   3002           00046                 movlw   0x02            ;Return home
+020B   00A3           00047                 movwf   Output
+020C   21E9           00048                 call    WrLCC
+020D   213E           00049                 call    Delay_2ms
+020E   0008           00050                 return
+020F   2A0F           00051                 goto    $               ;GUARD
+                      00052 
+                      00053 
+0210                  00054 Cls
+0210   3001           00055                 movlw   0x01            ;Clear the display
+0211   00A3           00056                 movwf   Output
+0212   21E9           00057                 call    WrLCC
+0213   213E           00058                 call    Delay_2ms       ;Per spec sheet
+0214   0008           00059                 return
+                      00060 
+0215                  00061 QuickCls        ;Like Cls, but with no delay. Use only when
+                      00062                         ;certain 2ms or more will pass before the LCD
+                      00063                         ;is accessed again.
+0215   3001           00064                 movlw   0x01            ;Clear the display
+0216   00A3           00065                 movwf   Output
+0217   21E9           00066                 call    WrLCC
+0218   0008           00067                 return
+                      00068 
+                      00069 
+0219                  00070 LCDGoto ;GOTO location in variable Output:
+                      00071                 ;0x00 to 0x27 in first line (0x00 - 0x0F visible),
+                      00072                 ;0x40 to 0x67 in second line (0x40 - 0x4F visible).
+0219   17A3           00073                 bsf             Output, 7       ;Set high bit of Output
+021A   29E9           00074                 goto    WrLCC           ;WrLCC will handle the return
+                      00075                                                         ;(this saves a stack level)
+                      00076 
+                      00171         
+                      00172         end
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 21
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ABDEN                             00000000
+ABDOVF                            00000007
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+ANS0                              00000000
+ANS1                              00000001
+ANS10                             00000002
+ANS11                             00000003
+ANS12                             00000004
+ANS13                             00000005
+ANS2                              00000002
+ANS3                              00000003
+ANS4                              00000004
+ANS5                              00000005
+ANS6                              00000006
+ANS7                              00000007
+ANS8                              00000000
+ANS9                              00000001
+ANSEL                             00000188
+ANSELH                            00000189
+BAUDCTL                           00000187
+BCLIE                             00000003
+BCLIF                             00000003
+BF                                00000000
+BRG0                              00000000
+BRG1                              00000001
+BRG10                             00000002
+BRG11                             00000003
+BRG12                             00000004
+BRG13                             00000005
+BRG14                             00000006
+BRG15                             00000007
+BRG16                             00000003
+BRG2                              00000002
+BRG3                              00000003
+BRG4                              00000004
+BRG5                              00000005
+BRG6                              00000006
+BRG7                              00000007
+BRG8                              00000000
+BRG9                              00000001
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 22
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+BRGH                              00000002
+C                                 00000000
+C1CH0                             00000000
+C1CH1                             00000001
+C1IE                              00000005
+C1IF                              00000005
+C1OE                              00000005
+C1ON                              00000007
+C1OUT                             00000006
+C1POL                             00000004
+C1R                               00000002
+C1RSEL                            00000005
+C1SEN                             00000005
+C2CH0                             00000000
+C2CH1                             00000001
+C2IE                              00000006
+C2IF                              00000006
+C2OE                              00000005
+C2ON                              00000007
+C2OUT                             00000006
+C2POL                             00000004
+C2R                               00000002
+C2REN                             00000004
+C2RSEL                            00000004
+C2SYNC                            00000000
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+CEXP                              0000002A
+CHS0                              00000002
+CHS1                              00000003
+CHS2                              00000004
+CHS3                              00000005
+CKE                               00000006
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 23
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+CKP                               00000004
+CM1CON0                           00000107
+CM2CON0                           00000108
+CM2CON1                           00000109
+CREN                              00000004
+CSRC                              00000007
+Cls                               00000210
+D                                 00000005
+DATA_ADDRESS                      00000005
+DC                                00000001
+DC1B0                             00000004
+DC1B1                             00000005
+DC2B0                             00000004
+DC2B1                             00000005
+DEXP                              0000002B
+D_A                               00000005
+D_NOT_A                           00000005
+Delay1                            00000020
+Delay2                            00000021
+Delay3                            00000022
+Delay_100ms                       00000170
+Delay_100us                       0000011F
+Delay_10ms                        00000151
+Delay_10s                         000001C7
+Delay_10us                        0000010E
+Delay_1ms                         00000133
+Delay_1s                          00000199
+Delay_200ms                       0000017D
+Delay_200us                       00000124
+Delay_20ms                        0000015B
+Delay_20s                         000001D7
+Delay_20us                        00000113
+Delay_2ms                         0000013E
+Delay_2s                          000001A8
+Delay_2us                         00000109
+Delay_500ms                       0000018B
+Delay_500us                       0000012A
+Delay_50ms                        00000164
+Delay_50us                        00000119
+Delay_5ms                         00000147
+Delay_5s                          000001B7
+Delay_5us                         0000010A
+ECCPAS                            0000009C
+ECCPAS0                           00000004
+ECCPAS1                           00000005
+ECCPAS2                           00000006
+ECCPASE                           00000007
+EEADR                             0000010D
+EEADRH                            0000010F
+EECON1                            0000018C
+EECON2                            0000018D
+EEDAT                             0000010C
+EEDATA                            0000010C
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 24
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+EEDATH                            0000010E
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+FVREN                             00000000
+Fail                              00000051
+FailFlag                          0000002C
+GCEN                              00000007
+GIE                               00000007
+GO                                00000001
+GO_DONE                           00000001
+GO_NOT_DONE                       00000001
+HTS                               00000002
+HexASCII                          000000E6
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IOCB                              00000096
+IOCB0                             00000000
+IOCB1                             00000001
+IOCB2                             00000002
+IOCB3                             00000003
+IOCB4                             00000004
+IOCB5                             00000005
+IOCB6                             00000006
+IOCB7                             00000007
+IRCF0                             00000004
+IRCF1                             00000005
+IRCF2                             00000006
+IRP                               00000007
+LCDGoto                           00000219
+LTS                               00000001
+LastCI                            00000026
+LastCO                            00000024
+LastCT                            00000028
+LastDI                            00000027
+LastDO                            00000025
+LastDT                            00000029
+Loop                              0000000C
+MC1OUT                            00000007
+MC2OUT                            00000006
+MSK                               00000093
+MSK0                              00000000
+MSK1                              00000001
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 25
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+MSK2                              00000002
+MSK3                              00000003
+MSK4                              00000004
+MSK5                              00000005
+MSK6                              00000006
+MSK7                              00000007
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000001
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OERR                              00000001
+OPTION_REG                        00000081
+OSCCON                            0000008F
+OSCTUNE                           00000090
+OSFIE                             00000007
+OSFIF                             00000007
+OSTS                              00000003
+Output                            00000023
+P                                 00000004
+P1M0                              00000006
+P1M1                              00000007
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PDC0                              00000000
+PDC1                              00000001
+PDC2                              00000002
+PDC3                              00000003
+PDC4                              00000004
+PDC5                              00000005
+PDC6                              00000006
+PEIE                              00000006
+PEN                               00000002
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PORTD                             00000008
+PORTE                             00000009
+PR2                               00000092
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 26
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PRSEN                             00000007
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSSAC0                            00000002
+PSSAC1                            00000003
+PSSBD0                            00000000
+PSSBD1                            00000001
+PSTRCON                           0000009D
+PULSR                             00000002
+PULSS                             00000003
+PWM1CON                           0000009B
+Pass                              00000041
+PrintF                            
+PrintFH                           
+PrintFHH                          
+PrintFHL                          
+PrintL                            
+PrintTestResults                  00000082
+QuickCls                          00000215
+R                                 00000002
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RA5                               00000005
+RA6                               00000006
+RA7                               00000007
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RC0                               00000000
+RC1                               00000001
+RC2                               00000002
+RC3                               00000003
+RC4                               00000004
+RC5                               00000005
+RC6                               00000006
+RC7                               00000007
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIDL                             00000006
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 27
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+RD0                               00000000
+RD1                               00000001
+RD2                               00000002
+RD3                               00000003
+RD4                               00000004
+RD5                               00000005
+RD6                               00000006
+RD7                               00000007
+RE0                               00000000
+RE1                               00000001
+RE2                               00000002
+RE3                               00000003
+READ_WRITE                        00000002
+RP0                               00000005
+RP1                               00000006
+RSEN                              00000001
+RX9                               00000006
+RX9D                              00000000
+R_NOT_W                           00000002
+R_W                               00000002
+RunTest                           00000061
+S                                 00000003
+SBOREN                            00000004
+SCKP                              00000004
+SCS                               00000000
+SEN                               00000000
+SENDB                             00000003
+SMP                               00000007
+SPBRG                             00000099
+SPBRGH                            0000009A
+SPEN                              00000007
+SR0                               00000006
+SR1                               00000007
+SRCON                             00000185
+SREN                              00000005
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPCON2                           00000091
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPMSK                            00000093
+SSPOV                             00000006
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 28
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+SSPSTAT                           00000094
+STATUS                            00000003
+STRA                              00000000
+STRB                              00000001
+STRC                              00000002
+STRD                              00000003
+STRSYNC                           00000004
+SWDTEN                            00000000
+SYNC                              00000004
+Set16F887                         000000F9
+SetLCD                            000001FD
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1GINV                            00000007
+T1GIV                             00000007
+T1GSS                             00000001
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1SYNC                            00000002
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1CS                            00000001
+TMR1GE                            00000006
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISA5                            00000005
+TRISA6                            00000006
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 29
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TRISA7                            00000007
+TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
+TRISC                             00000087
+TRISC0                            00000000
+TRISC1                            00000001
+TRISC2                            00000002
+TRISC3                            00000003
+TRISC4                            00000004
+TRISC5                            00000005
+TRISC6                            00000006
+TRISC7                            00000007
+TRISD                             00000088
+TRISD0                            00000000
+TRISD1                            00000001
+TRISD2                            00000002
+TRISD3                            00000003
+TRISD4                            00000004
+TRISD5                            00000005
+TRISD6                            00000006
+TRISD7                            00000007
+TRISE                             00000089
+TRISE0                            00000000
+TRISE1                            00000001
+TRISE2                            00000002
+TRISE3                            00000003
+TRMT                              00000001
+TUN0                              00000000
+TUN1                              00000001
+TUN2                              00000002
+TUN3                              00000003
+TUN4                              00000004
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+TestVector                        
+UA                                00000001
+ULPWUE                            00000005
+ULPWUIE                           00000002
+ULPWUIF                           00000002
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 30
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+VCFG0                             00000004
+VCFG1                             00000005
+VR0                               00000000
+VR1                               00000001
+VR2                               00000002
+VR3                               00000003
+VRCON                             00000097
+VREN                              00000007
+VROE                              00000006
+VRR                               00000005
+VRSS                              00000004
+W                                 00000000
+WCOL                              00000007
+WDTCON                            00000105
+WDTPS0                            00000001
+WDTPS1                            00000002
+WDTPS2                            00000003
+WDTPS3                            00000004
+WPUB                              00000095
+WPUB0                             00000000
+WPUB1                             00000001
+WPUB2                             00000002
+WPUB3                             00000003
+WPUB4                             00000004
+WPUB5                             00000005
+WPUB6                             00000006
+WPUB7                             00000007
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+WUE                               00000001
+WrLCC                             000001E9
+WrLCD                             000001F3
+Z                                 00000002
+_BOR21V                           00003EFF
+_BOR40V                           00003FFF
+_BOR_NSLEEP                       00003EFF
+_BOR_OFF                          00003CFF
+_BOR_ON                           00003FFF
+_BOR_SBODEN                       00003DFF
+_CONFIG1                          00002007
+_CONFIG2                          00002008
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003F7F
+_CP_OFF                           00003FFF
+_CP_ON                            00003FBF
+_DEBUG_OFF                        00003FFF
+_DEBUG_ON                         00001FFF
+_DEVID1                           00002006
+_EC_OSC                           00003FFB
+_EXTRC                            00003FFF
+_EXTRCIO                          00003FFE
+_EXTRC_OSC_CLKOUT                 00003FFF
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 31
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_EXTRC_OSC_NOCLKOUT               00003FFE
+_FCMEN_OFF                        000037FF
+_FCMEN_ON                         00003FFF
+_HS_OSC                           00003FFA
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_IESO_OFF                         00003BFF
+_IESO_ON                          00003FFF
+_INTOSC                           00003FFD
+_INTOSCIO                         00003FFC
+_INTRC_OSC_CLKOUT                 00003FFD
+_INTRC_OSC_NOCLKOUT               00003FFC
+_LP_OSC                           00003FF8
+_LVP_OFF                          00002FFF
+_LVP_ON                           00003FFF
+_MCLRE_OFF                        00003FDF
+_MCLRE_ON                         00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FEF
+_WDT_OFF                          00003FF7
+_WDT_ON                           00003FFF
+_WRT_1FOURTH                      00003BFF
+_WRT_256                          00003DFF
+_WRT_HALF                         000039FF
+_WRT_OFF                          00003FFF
+_XT_OSC                           00003FF9
+__16F887                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0140 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0180 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+01C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0200 : XXXXXXXXXXXXXXXX XXXXXXXXXXX----- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   539
+Program Memory Words Free:  7653
+
+
+MPASM  5.42                    CHIPTESTER.ASM   4-5-2013  15:30:43         PAGE 32
+
+
+
+
+
+Errors   :     0
+Warnings :     1 reported,     0 suppressed
+Messages :    11 reported,     0 suppressed
+
+
