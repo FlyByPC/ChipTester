@@ -5,7 +5,7 @@ Message[302] C:\USERS\ERIC\DOCUMENTS\CIRCUITS\16F887\CHIPTESTER\CHIPTESTER.ASM 2
 Message[302] C:\USERS\ERIC\DOCUMENTS\CIRCUITS\16F887\CHIPTESTER\CHIPTESTER.ASM 21 : Register in operand not in bank 0.  Ensure that bank bits are correct.
 Message[302] C:\USERS\ERIC\DOCUMENTS\CIRCUITS\16F887\CHIPTESTER\CHIPTESTER.ASM 22 : Register in operand not in bank 0.  Ensure that bank bits are correct.
 Message[302] C:\USERS\ERIC\DOCUMENTS\CIRCUITS\16F887\CHIPTESTER\CHIPTESTER.ASM 77 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] C:\USERS\ERIC\DOCUMENTS\CIRCUITS\16F887\CHIPTESTER\CHIPTESTER.ASM 79 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\ERIC\DOCUMENTS\CIRCUITS\16F887\CHIPTESTER\CHIPTESTER.ASM 81 : Register in operand not in bank 0.  Ensure that bank bits are correct.
 Message[302] C:\USERS\ERIC\DOCUMENTS\CIRCUITS\16F887\CHIPTESTER\16F887_SETUP.INC 13 : Register in operand not in bank 0.  Ensure that bank bits are correct.
 Message[302] C:\USERS\ERIC\DOCUMENTS\CIRCUITS\16F887\CHIPTESTER\16F887_SETUP.INC 26 : Register in operand not in bank 0.  Ensure that bank bits are correct.
 Message[302] C:\USERS\ERIC\DOCUMENTS\CIRCUITS\16F887\CHIPTESTER\16F887_SETUP.INC 29 : Register in operand not in bank 0.  Ensure that bank bits are correct.

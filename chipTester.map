@@ -1,60 +1,60 @@
 MPLINK 4.40, Linker
-Linker Map File - Created Fri Apr 05 15:30:45 2013
+Linker Map File - Created Fri Apr 05 16:45:25 2013
 
                                  Section Info
                   Section       Type    Address   Location Size(Bytes)
                 ---------  ---------  ---------  ---------  ---------
                    .org_0       code   0x000000    program   0x000000
-                   .org_1       code   0x000000    program   0x000436
+                   .org_1       code   0x000000    program   0x0003f0
 
 
 
                               Program Memory Usage 
                                Start         End      
                            ---------   ---------      
-                            0x000000    0x00021a      
-            539 out of 8455 program addresses used, program memory utilization is 6%
+                            0x000000    0x0001f7      
+            504 out of 8455 program addresses used, program memory utilization is 5%
 
 
 
                               Symbols - Sorted by Name
                      Name    Address   Location    Storage File                     
                 ---------  ---------  ---------  --------- ---------                
-                      Cls   0x000210    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
-              Delay_100ms   0x000170    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-              Delay_100us   0x00011f    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-               Delay_10ms   0x000151    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                Delay_10s   0x0001c7    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-               Delay_10us   0x00010e    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                Delay_1ms   0x000133    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                 Delay_1s   0x000199    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-              Delay_200ms   0x00017d    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-              Delay_200us   0x000124    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-               Delay_20ms   0x00015b    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                Delay_20s   0x0001d7    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-               Delay_20us   0x000113    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                Delay_2ms   0x00013e    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                 Delay_2s   0x0001a8    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                Delay_2us   0x000109    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-              Delay_500ms   0x00018b    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-              Delay_500us   0x00012a    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-               Delay_50ms   0x000164    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-               Delay_50us   0x000119    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                Delay_5ms   0x000147    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                 Delay_5s   0x0001b7    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                Delay_5us   0x00010a    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                     Fail   0x000051    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\chipTester.asm
-                 HexASCII   0x0000e6    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\HexASCII.inc
-                  LCDGoto   0x000219    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
+                      Cls   0x0001ed    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
+              Delay_100ms   0x00014d    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+              Delay_100us   0x0000fc    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+               Delay_10ms   0x00012e    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                Delay_10s   0x0001a4    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+               Delay_10us   0x0000eb    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                Delay_1ms   0x000110    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                 Delay_1s   0x000176    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+              Delay_200ms   0x00015a    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+              Delay_200us   0x000101    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+               Delay_20ms   0x000138    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                Delay_20s   0x0001b4    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+               Delay_20us   0x0000f0    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                Delay_2ms   0x00011b    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                 Delay_2s   0x000185    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                Delay_2us   0x0000e6    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+              Delay_500ms   0x000168    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+              Delay_500us   0x000107    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+               Delay_50ms   0x000141    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+               Delay_50us   0x0000f6    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                Delay_5ms   0x000124    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                 Delay_5s   0x000194    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                Delay_5us   0x0000e7    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                     Fail   0x00002a    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\chipTester.asm
+                 HexASCII   0x0000c3    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\HexASCII.inc
+                  LCDGoto   0x0001f6    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
                      Loop   0x00000c    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\chipTester.asm
-                     Pass   0x000041    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\chipTester.asm
-         PrintTestResults   0x000082    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\chipTester.asm
-                 QuickCls   0x000215    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
-                  RunTest   0x000061    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\chipTester.asm
-                Set16F887   0x0000f9    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\16F887_setup.inc
-                   SetLCD   0x0001fd    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
-                    WrLCC   0x0001e9    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
-                    WrLCD   0x0001f3    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
+                     Pass   0x00001a    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\chipTester.asm
+         PrintTestResults   0x00005f    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\chipTester.asm
+                 QuickCls   0x0001f2    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
+                  RunTest   0x00003a    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\chipTester.asm
+                Set16F887   0x0000d6    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\16F887_setup.inc
+                   SetLCD   0x0001da    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
+                    WrLCC   0x0001c6    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
+                    WrLCD   0x0001d0    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
 
 
 
@@ -62,39 +62,39 @@ Linker Map File - Created Fri Apr 05 15:30:45 2013
                      Name    Address   Location    Storage File                     
                 ---------  ---------  ---------  --------- ---------                
                      Loop   0x00000c    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\chipTester.asm
-                     Pass   0x000041    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\chipTester.asm
-                     Fail   0x000051    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\chipTester.asm
-                  RunTest   0x000061    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\chipTester.asm
-         PrintTestResults   0x000082    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\chipTester.asm
-                 HexASCII   0x0000e6    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\HexASCII.inc
-                Set16F887   0x0000f9    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\16F887_setup.inc
-                Delay_2us   0x000109    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                Delay_5us   0x00010a    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-               Delay_10us   0x00010e    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-               Delay_20us   0x000113    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-               Delay_50us   0x000119    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-              Delay_100us   0x00011f    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-              Delay_200us   0x000124    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-              Delay_500us   0x00012a    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                Delay_1ms   0x000133    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                Delay_2ms   0x00013e    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                Delay_5ms   0x000147    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-               Delay_10ms   0x000151    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-               Delay_20ms   0x00015b    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-               Delay_50ms   0x000164    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-              Delay_100ms   0x000170    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-              Delay_200ms   0x00017d    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-              Delay_500ms   0x00018b    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                 Delay_1s   0x000199    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                 Delay_2s   0x0001a8    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                 Delay_5s   0x0001b7    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                Delay_10s   0x0001c7    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                Delay_20s   0x0001d7    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
-                    WrLCC   0x0001e9    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
-                    WrLCD   0x0001f3    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
-                   SetLCD   0x0001fd    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
-                      Cls   0x000210    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
-                 QuickCls   0x000215    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
-                  LCDGoto   0x000219    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
+                     Pass   0x00001a    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\chipTester.asm
+                     Fail   0x00002a    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\chipTester.asm
+                  RunTest   0x00003a    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\chipTester.asm
+         PrintTestResults   0x00005f    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\chipTester.asm
+                 HexASCII   0x0000c3    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\HexASCII.inc
+                Set16F887   0x0000d6    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\16F887_setup.inc
+                Delay_2us   0x0000e6    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                Delay_5us   0x0000e7    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+               Delay_10us   0x0000eb    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+               Delay_20us   0x0000f0    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+               Delay_50us   0x0000f6    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+              Delay_100us   0x0000fc    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+              Delay_200us   0x000101    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+              Delay_500us   0x000107    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                Delay_1ms   0x000110    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                Delay_2ms   0x00011b    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                Delay_5ms   0x000124    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+               Delay_10ms   0x00012e    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+               Delay_20ms   0x000138    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+               Delay_50ms   0x000141    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+              Delay_100ms   0x00014d    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+              Delay_200ms   0x00015a    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+              Delay_500ms   0x000168    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                 Delay_1s   0x000176    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                 Delay_2s   0x000185    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                 Delay_5s   0x000194    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                Delay_10s   0x0001a4    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                Delay_20s   0x0001b4    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\delay_8.inc
+                    WrLCC   0x0001c6    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
+                    WrLCD   0x0001d0    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
+                   SetLCD   0x0001da    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
+                      Cls   0x0001ed    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
+                 QuickCls   0x0001f2    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
+                  LCDGoto   0x0001f6    program     static C:\Users\Eric\Documents\Circuits\16F887\ChipTester\LCD.inc
 
 
